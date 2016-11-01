@@ -91,11 +91,13 @@ net.host = function(port)
 	-- We're going to host the server.
 
 	client = enet.host_create() -- returns a host object!
+	client:compress_with_range_coder()
 	--if not client then event.log "net.connect -> Could not create client!" return false end
 
 	--if port % 1 ~= 0 then event.log "net.host -> Port number not an integer!" return false end
 	--if port < 0 or port > 65535 then event.log "net.host -> Port number not in range!" return false end
 	_server = enet.host_create(("*:%d"):format(port), 64, 5, 0, 0) -- returns a host object!
+	_server:compress_with_range_coder()
 	--if not _server then event.log "net.host -> Could not create server!" return false end
 	server = client:connect(("localhost:%d"):format(port), 5) -- returns a peer object!
 	--if not server then event.log "net.connect -> Could not connect to server!" return false end
@@ -108,6 +110,7 @@ net.connect = function(address, port)
 	-- We're only a client, server is another instance.
 
 	client = enet.host_create() -- returns a host object!
+	client:compress_with_range_coder()
 	--if not client then event.log "net.connect -> Could not create client!" return false end
 
 	--if port % 1 ~= 0 then event.log "net.connect -> Port number not an integer!" return false end
