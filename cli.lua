@@ -10,20 +10,14 @@
 -- The prompt symbol.
 local prompt  = '>'
 
--- OS specific newlines.
-local nl
-
--- If this flag is set, the prompt should switch to "continuous input" mode.
--- It's used with commands requiring multiple lines of input.
-local continued = false
-
--- Whether a session is opened to others, or closed/local/private.
-local shared = false
+-- Prefixes for whether the session is opened to others, or closed/private.
 local sharedPrefix = {[true] = '+', [false] = '-'}
 
 -- Supported modes and prompt prefixes.
-local modes = {'', 'o', 'c', 's', 'd', 'i', 'f', 'p', 'n', 'a', 'r', 't', 'l'}
+local mode = {}
 
+--[[
+local modes = {'m', 'o', 'c', 's', 'd', 'i', 'f', 'p', 'n', 'a', 'r', 't', 'l'}
 local mode = {
 	-- These are their long prefix names
 	'', 'options', 'chat', 'session'
@@ -33,6 +27,10 @@ local mode = {
 	-- mode should be an array of arrays containing all possible command
 	-- strings, and functions that deal with them.
 }
+--]]
+
+-- Threading and message passing.
+local thread, channel
 
 -- Create a thread to do all the CLI input uninterrupted.
 local threadData = [[
@@ -52,21 +50,34 @@ local threadData = [[
 	end
 ]]
 
--- Threading and message passing.
-local thread, channel
-
--- Class
+-- Module namespace.
 local CLI = {}
+
+-- OS specific newlines.
+CLI.nl
+
+-- Whether a session is opened to others, or closed/local/private.
+CLI.shared = false
+
+-- Whether input is allowed or not.
+CLI.inputAllowed = true
+
+-- If this flag is set, the prompt should switch to "continuous input" mode.
+-- It's used with commands requiring multiple lines of input.
+CLI.continued = false
+
+-- What mode we're currently in.
+CLI.currentMode
 
 CLI.init = function()
 	-- Set up OS-specific variables.
 	local os = love.system.getOS()
 	if os == 'Windows' then
-		nl = '\r\n'
+		CLI.nl = '\r\n'
 	elseif os == 'OS X' then
-		nl = '\r'
+		CLI.nl = '\r'
 	else--if os == 'Linux' then
-		nl = '\n'
+		CLI.nl = '\n'
 	end
 
 	-- Print out title.
@@ -76,7 +87,7 @@ CLI.init = function()
 		"MUSSORGSAL - Multi-User Sound Studio",
 		version, "by zorg", ("2016-%s"):format(currentYear), "License: ISC"
 	}," - ")
-	io.write(('%s%s'):format(title, nl))
+	io.write(('%s%s'):format(title, CLI.nl))
 
 	-- Write out prompt.
 	io.write(prompt)
@@ -87,12 +98,20 @@ CLI.init = function()
 	thread:start(channel)
 end
 
+CLI.allowInput = function(allowed)
+	CLI.inputAllowed = allowed
+end
+
+CLI.addMode = function(mode)
+	mode[mode.key] = mode
+end
+
 CLI.update = function(dt)
 	-- Get data from the input thread.
 	if channel:getCount() > 0 then
 		local data = channel:pop()
 
-		-- TODO: Implement per-mode command handling, as stated above.
-
+		-- Per-mode command handling.
+		mode[CLI.currentMode]._parse(data)
 	end
 end
