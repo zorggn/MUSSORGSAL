@@ -1,4 +1,4 @@
-#############
+﻿#############
 ## Windows detritus
 #############
 
@@ -20,5 +20,6 @@ $RECYCLE.BIN/
 ## Local löve execute helper
 #############
 
+_othershits.lua
 run.bat
 run-server.bat
