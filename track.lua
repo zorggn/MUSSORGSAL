@@ -1,7 +1,7 @@
 -- Track
 -- © zorg @ 2016 § ISC
 
--- A track can hold notes.
+-- A track can hold notes. It's monophonic.
 
 local track = {}
 
@@ -14,7 +14,7 @@ local mtTrack = {__index = track}
 local new = function()
 	local trk = setmetatable({},mtTrack)
 
-	trk.notes = {}
+	trk.clips = {}
 
 	return trk
 end
