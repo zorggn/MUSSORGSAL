@@ -2,7 +2,7 @@
 -- (Also Danish for "mouse grief floor", even though it's highly irrelevant...)
 -- © zorg, Nixola @ 2016 § ISC
 
--- Uses the following libraries:
+-- Uses the following libraries (or not):
 --[[
 	-- robingvx  - bitser (serializing)
 	-- vrld      - HUMP/gamestates (using pre-force-update version)
@@ -28,6 +28,10 @@ function love.load(args)
 	love.window.setMode(800, 600, {vsync=true})
 	love.window.setTitle("Multi-User Sound Studio (Originally Rapid Gamedev Software as LÖVE)")
 	love.graphics.setLineStyle('rough')
+
+	love.window.setDisplaySleepEnabled( enable )
+
+	print(love.graphics.getRendererInfo())
 end
 
 
